@@ -11,7 +11,7 @@ socket.emit('getAllChat', function (ar, all) {
 	// console.log(allChatDataFull);
 });
 
-socket.emit('getChat', 2, callback);
+socket.emit('getChat', 1, callback);
 function callback(test) {
 	console.log(test);
 }
