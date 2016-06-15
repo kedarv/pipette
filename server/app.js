@@ -47,6 +47,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('getAllChat', function (fn) {
+		console.log("yup");
 		chat.getAllChats(fn);
 	});
 	socket.on('getChat', function (chat_id, fn) {
