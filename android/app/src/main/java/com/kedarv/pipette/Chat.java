@@ -1,14 +1,15 @@
 package com.kedarv.pipette;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
  * Created by kedar on 6/15/16.
  */
 public class Chat {
-    HashMap<String, String> people;
-    long date;
-    int chat_id;
+    private HashMap<String, String> people;
+    private long date;
+    private int chat_id;
 
     public Chat(int chat_id, HashMap<String, String> people, long date) {
         this.chat_id = chat_id;
@@ -17,5 +18,27 @@ public class Chat {
     }
     public String toString() {
         return "chat_id: " + chat_id + " people: " + people.toString() + " date: " + date;
+    }
+
+    public HashMap<String, String> getPeople() {
+        return people;
+    }
+    public String getPeopleAsString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (String key : people.keySet()) {
+            sb.append(key + ", ");
+        }
+        return sb.toString();
+    }
+    public long getDate() {
+        return date;
+    }
+    public String getReadableDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, h:mm a");
+        return sdf.format(date * 1000L);
+    }
+    public int getChatID() {
+        return chat_id;
     }
 }

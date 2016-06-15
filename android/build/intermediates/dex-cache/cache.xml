@@ -1,12 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" >
-
-    <item
-        jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        revision="23.0.3"
-        sha1="ca7ee467d179d24dac3e2f2a70949565cc2aaf83">
-        <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_8a71e3a6ecb1acf91d2261d8b2e7d7469d6c7053/classes.dex" />
-    </item>
-
-</items>
+<items version="2" />
