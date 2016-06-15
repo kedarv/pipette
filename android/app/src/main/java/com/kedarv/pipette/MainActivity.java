@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Chat> cList = new ArrayList<>();
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
+    Socket socket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,19 +63,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
         recyclerView.setAdapter(chatAdapter);
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                Chat c = cList.get(position);
-                Toast.makeText(getApplicationContext(), c.getChatID() + " is selected!", Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onLongClick(View view, int position) {
 
-            }
-        }));
-        Socket socket = null;
         try {
             String URL = "http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000");
             socket = IO.socket(URL);
@@ -84,6 +74,27 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         socket.connect();
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Chat c = cList.get(position);
+                Toast.makeText(getApplicationContext(), c.getChatID() + " is selected!", Toast.LENGTH_SHORT).show();
+                socket.emit("getChat", c.getChatID(), new Ack() {
+                    @Override
+                    public void call(Object... args) {
+                        Log.w("pls work", args[0].toString());
+                        Intent i = new Intent(getApplicationContext(), Messaging.class);
+                        i.putExtra("data",args[0].toString());
+                        startActivity(i);
+                    }
+                });
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
         socket.emit("getAllChat", new Ack() {
             @Override
             public void call(Object... args) {
@@ -101,7 +112,10 @@ public class MainActivity extends AppCompatActivity {
                         Iterator<JsonNode> peopleIterator = chatThread.get("people").elements();
                         while(peopleIterator.hasNext()) {
                             JsonNode person = peopleIterator.next();
-                            p.put(person.get("value").toString(), person.get("lookupValue").toString());
+                            String number = person.get("value").toString().replace("\"", "");
+                            number = String.format("(%s) %s-%s", number.substring(2, 5), number.substring(5, 8),
+                                    number.substring(8, 12));
+                            p.put(number, person.get("lookupValue").toString());
                         }
                         Chat chat = new Chat(chat_id, p, date);
                         cList.add(chat);
