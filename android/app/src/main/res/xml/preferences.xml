@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:title="Server IP"
+        android:key="server_ip"
+        android:summary="Please provide your server IP"></EditTextPreference>
+    <EditTextPreference android:title="Server Port"
+        android:key="server_port"
+        android:numeric="signed"
+        android:summary="Please provide your server port"></EditTextPreference>
+    <!--<CheckBoxPreference android:title="some checkbox"-->
+        <!--android:defaultValue="false"-->
+        <!--android:summary="somecheckbox"-->
+        <!--android:key="somecheckbox" />-->
+    <!--<ListPreference     android:title="some select"-->
+        <!--android:summary="select something"-->
+        <!--android:key="somekey"-->
+        <!--android:defaultValue="1"-->
+        <!--android:entries="@array/listArray"-->
+        <!--android:entryValues="@array/listValues" />-->
+</PreferenceScreen>
