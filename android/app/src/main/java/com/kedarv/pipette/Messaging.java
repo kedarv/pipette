@@ -31,6 +31,7 @@ import java.util.List;
 import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class Messaging extends AppCompatActivity {
     Socket socket = null;
@@ -39,6 +40,7 @@ public class Messaging extends AppCompatActivity {
     private List<Message> messageList = new ArrayList<>();
     private RecyclerView recyclerView;
     private MessageAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Bundle extras = getIntent().getExtras();
@@ -56,13 +58,23 @@ public class Messaging extends AppCompatActivity {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        recyclerView.setItemAnimator(new SlideInLeftAnimator());
+
         recyclerView.setAdapter(mAdapter);
+        String URL = "http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000");
 
+        try {
+            socket = IO.socket(URL);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        socket.connect();
 
+        final ObjectMapper mapper = new ObjectMapper();
         if (extras != null) {
             String value = extras.getString("data");
 
-            ObjectMapper mapper = new ObjectMapper();
+
             JsonNode rootNode = null;
             try {
                 rootNode = mapper.readTree(value);
@@ -84,6 +96,28 @@ public class Messaging extends AppCompatActivity {
             }
             mAdapter.notifyDataSetChanged();
         }
+        // this MUST be put on another thread to reduce UI lag
+        socket.on("updateChatData", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JsonNode newNode = null;
+                try {
+                    newNode = mapper.readTree(args[0].toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.w("here!", newNode.toString());
+                JsonNode node = newNode.get("data").get(0);
+                Message m = new Message(node.get("text").asText(), node.get("who_from").asText(), node.get("is_from_me").asInt(), node.get("chat_id").asInt(), node.get("date").asInt());
+                messageList.add(m);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyItemInserted(messageList.size() - 1);
+                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
+                    }});
+            }
+        });
 
         Button button= (Button) findViewById(R.id.sendBtn);
         button.setOnClickListener(new View.OnClickListener() {
@@ -101,9 +135,6 @@ public class Messaging extends AppCompatActivity {
 
     }
     public void send(String msg, String guid) throws URISyntaxException {
-        String URL = "http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000");
-        socket = IO.socket(URL);
-        socket.connect();
         JSONObject json = new JSONObject();
         try {
             json.put("text",  msg);
