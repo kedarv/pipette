@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Chat c = cList.get(position);
+                final Chat c = cList.get(position);
                 Toast.makeText(getApplicationContext(), c.getChatID() + " is selected!", Toast.LENGTH_SHORT).show();
                 socket.emit("getChat", c.getChatID(), new Ack() {
                     @Override
@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.w("pls work", args[0].toString());
                         Intent i = new Intent(getApplicationContext(), Messaging.class);
                         i.putExtra("data",args[0].toString());
+                        i.putExtra("people", c.getPeopleAsString());
                         startActivity(i);
                     }
                 });

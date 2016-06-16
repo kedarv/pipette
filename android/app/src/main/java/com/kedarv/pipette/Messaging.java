@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,10 +41,16 @@ public class Messaging extends AppCompatActivity {
     private MessageAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Bundle extras = getIntent().getExtras();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        toolbar.setTitle(extras.getString("people"));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         recyclerView = (RecyclerView) findViewById(R.id.message_recycler_view);
         mAdapter = new MessageAdapter(messageList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -50,10 +58,9 @@ public class Messaging extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
-        Bundle extras = getIntent().getExtras();
+
         if (extras != null) {
             String value = extras.getString("data");
-
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -114,5 +121,14 @@ public class Messaging extends AppCompatActivity {
                 Log.w("pls work", args[0].toString());
             }
         });
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

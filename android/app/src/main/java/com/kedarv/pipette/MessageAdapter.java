@@ -3,6 +3,7 @@ package com.kedarv.pipette;
 /**
  * Created by kedar on 6/15/16.
  */
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,7 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         holder.sender.setText(message.getSender());
         holder.text.setText(message.getText());
         if(message.getFrom_me() == 1) {
-            holder.background.setBackgroundResource(R.drawable.in_message_bg);
+            holder.background.setBackgroundResource(R.drawable.chat_me);
 
             LinearLayout.LayoutParams layoutParams =
                     (LinearLayout.LayoutParams) holder.background.getLayoutParams();
@@ -65,9 +66,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             layoutParams = (LinearLayout.LayoutParams) holder.text.getLayoutParams();
             layoutParams.gravity = Gravity.RIGHT;
             holder.text.setLayoutParams(layoutParams);
+            holder.text.setTextColor(Color.WHITE);
+            layoutParams = (LinearLayout.LayoutParams) holder.sender.getLayoutParams();
+            layoutParams.gravity = Gravity.RIGHT;
+            holder.sender.setLayoutParams(layoutParams);
         }
         else {
-            holder.background.setBackgroundResource(R.drawable.out_message_bg);
+            holder.background.setBackgroundResource(R.drawable.chat_them);
 
             LinearLayout.LayoutParams layoutParams =
                     (LinearLayout.LayoutParams) holder.background.getLayoutParams();
@@ -83,6 +88,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             layoutParams = (LinearLayout.LayoutParams) holder.text.getLayoutParams();
             layoutParams.gravity = Gravity.LEFT;
             holder.text.setLayoutParams(layoutParams);
+            holder.text.setTextColor(Color.BLACK);
+            layoutParams = (LinearLayout.LayoutParams) holder.sender.getLayoutParams();
+            layoutParams.gravity = Gravity.LEFT;
+            holder.sender.setLayoutParams(layoutParams);
         }
 
     }

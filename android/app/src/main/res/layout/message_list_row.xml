@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/content"
@@ -10,16 +12,15 @@
         android:orientation="vertical">
     <TextView
         android:id="@+id/sender"
-        android:textColor="@color/year"
         android:layout_width="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_gravity="right"
+        android:textColor="@android:color/darker_gray"
         android:layout_height="wrap_content" />
     <LinearLayout
         android:id="@+id/contentWithBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:background="@drawable/in_message_bg"
         android:paddingLeft="10dp"
         android:paddingBottom="10dp"
         android:orientation="vertical"
@@ -28,8 +29,9 @@
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:maxWidth="240dp"/>
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            android:maxWidth="220dp"/>
     </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
