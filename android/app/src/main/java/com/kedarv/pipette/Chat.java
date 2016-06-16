@@ -26,7 +26,7 @@ public class Chat {
     public String getPeopleAsString() {
         StringBuilder sb = new StringBuilder();
 
-        for (String key : people.keySet()) {
+        for (String key : people.values()) {
             if (sb.length() != 0) {
                 sb.append(", ");
             }

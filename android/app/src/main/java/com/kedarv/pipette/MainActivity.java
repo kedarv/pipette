@@ -1,9 +1,16 @@
 package com.kedarv.pipette;
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -43,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
     Socket socket = null;
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    private boolean hasContactsPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(chatAdapter);
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
         try {
             String URL = "http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000");
             socket = IO.socket(URL);
@@ -114,9 +125,22 @@ public class MainActivity extends AppCompatActivity {
                         while(peopleIterator.hasNext()) {
                             JsonNode person = peopleIterator.next();
                             String number = person.get("value").toString().replace("\"", "");
+//                            if(hasContactsPermission) {
+
+//                                Log.w("name", "" + );
+//                            }
                             number = String.format("(%s) %s-%s", number.substring(2, 5), number.substring(5, 8),
                                     number.substring(8, 12));
-                            p.put(number, person.get("lookupValue").toString());
+                            String name = getContactName(getApplicationContext(), number);
+                            if(name != null) {
+                                p.put(number, name);
+                            }
+                            else {
+
+                                p.put(number, number);
+                            }
+
+
                         }
                         Chat chat = new Chat(chat_id, p, date);
                         cList.add(chat);
@@ -217,6 +241,36 @@ public class MainActivity extends AppCompatActivity {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
         }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                hasContactsPermission = true;
+            } else {
+                Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static String getContactName(Context context, String phoneNumber) {
+        ContentResolver cr = context.getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        String contactName = null;
+        if(cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+
+        if(cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return contactName;
     }
 
 }
