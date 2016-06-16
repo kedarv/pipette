@@ -95,6 +95,7 @@ public class Messaging extends AppCompatActivity {
                 messageList.add(m);
             }
             mAdapter.notifyDataSetChanged();
+            recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
         }
         // this MUST be put on another thread to reduce UI lag
         socket.on("updateChatData", new Emitter.Listener() {
@@ -114,7 +115,7 @@ public class Messaging extends AppCompatActivity {
                     @Override
                     public void run() {
                         mAdapter.notifyItemInserted(messageList.size() - 1);
-                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
+//                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
                     }});
             }
         });
