@@ -134,10 +134,19 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        HashMap<String, String> s = new HashMap<>();
-        s.put("lol", "lol");
-        Chat c = new Chat(10, s, 10);
-        cList.add(c);
+//        HashMap<String, String> s = new HashMap<>();
+//        s.put("lol", "lol");
+//        Chat c = new Chat(10, s, 10);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+//        cList.add(c);
+
         chatAdapter.notifyDataSetChanged();
     }
     // Menu icons are inflated just as they were with actionbar

@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +22,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import io.socket.client.Ack;
 import io.socket.client.IO;
@@ -29,15 +34,26 @@ public class Messaging extends AppCompatActivity {
     Socket socket = null;
     SharedPreferences prefs;
     String guid;
+    private List<Message> messageList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private MessageAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
+
+        recyclerView = (RecyclerView) findViewById(R.id.message_recycler_view);
+        mAdapter = new MessageAdapter(messageList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mAdapter);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String value = extras.getString("data");
-            TextView t=(TextView)findViewById(R.id.convo);
+
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -56,9 +72,12 @@ public class Messaging extends AppCompatActivity {
                     sb.append("from me: ");
                 }
                sb.append(messages.get("text") + "\n");
+                Message m = new Message(messages.get("text").asText(), messages.get("who_from").asText(), messages.get("is_from_me").asInt(), messages.get("chat_id").asInt(), messages.get("date").asInt());
+                messageList.add(m);
             }
-            t.setText(sb.toString());
+            mAdapter.notifyDataSetChanged();
         }
+
         Button button= (Button) findViewById(R.id.sendBtn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

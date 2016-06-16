@@ -15,11 +15,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     private List<Chat> chatList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView chat_id, people, date;
+        public TextView people, date;
 
         public MyViewHolder(View view) {
             super(view);
-            chat_id = (TextView) view.findViewById(R.id.title);
             people = (TextView) view.findViewById(R.id.genre);
             date = (TextView) view.findViewById(R.id.year);
         }
@@ -41,7 +40,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Chat chat = chatList.get(position);
-        holder.chat_id.setText(Integer.toString(chat.getChatID()));
         holder.people.setText(chat.getReadableDate());
         holder.date.setText(chat.getPeopleAsString());
     }

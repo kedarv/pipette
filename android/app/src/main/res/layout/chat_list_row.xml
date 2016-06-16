@@ -24,18 +24,4 @@
         android:layout_width="match_parent"
 
         android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/title"
-        android:textColor="@color/title"
-        android:textStyle="bold"
-        android:layout_alignParentRight="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-
-
-
-
 </RelativeLayout>
