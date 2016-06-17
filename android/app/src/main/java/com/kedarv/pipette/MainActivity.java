@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     Socket socket = null;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private boolean hasContactsPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +54,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(chatAdapter);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-        }
 
         /* Set up socket TODO: Move to thread */
         SocketApplication app = new SocketApplication(getApplicationContext());
@@ -87,6 +82,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
+        else {
+            fetchConversations();
+        }
+    }
+
+    public void fetchConversations() {
         socket.emit("getAllChat", new Ack() {
             @Override
             public void call(Object... args) {
@@ -104,24 +108,16 @@ public class MainActivity extends AppCompatActivity {
                         while(peopleIterator.hasNext()) {
                             JsonNode person = peopleIterator.next();
                             String number = person.get("value").toString().replace("\"", "");
-//                            if(hasContactsPermission) {
-
-//                                Log.w("name", "" + );
-//                            }
                             if(!number.contains("@")) {
                                 number = String.format("(%s) %s-%s", number.substring(2, 5), number.substring(5, 8),
                                         number.substring(8, 12));
                             }
                             String name = getContactName(getApplicationContext(), number);
-                            if(name != null) {
+                            if (name != null) {
                                 p.put(number, name);
-                            }
-                            else {
-
+                            } else {
                                 p.put(number, number);
                             }
-
-
                         }
                         Chat chat = new Chat(chat_id, p, date);
                         cList.add(chat);
@@ -142,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
         });
         chatAdapter.notifyDataSetChanged();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -209,13 +204,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                hasContactsPermission = true;
+                fetchConversations();
             } else {
-                Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Can't display contact names until permission is granted!", Toast.LENGTH_SHORT).show();
             }
         }
     }
