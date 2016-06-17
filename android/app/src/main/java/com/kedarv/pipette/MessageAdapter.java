@@ -20,8 +20,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView sender, text;
-        public LinearLayout background;
-        public LinearLayout content;
+        public LinearLayout background, content;
         public MyViewHolder(View view) {
             super(view);
             sender = (TextView) view.findViewById(R.id.sender);
@@ -40,7 +39,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.message_list_row, parent, false);
-
         return new MyViewHolder(itemView);
     }
 
@@ -49,20 +47,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         Message message = messageList.get(position);
         holder.sender.setText(message.getSender());
         holder.text.setText(message.getText());
+
         if(message.getFrom_me() == 1) {
             holder.background.setBackgroundResource(R.drawable.chat_me);
-
             LinearLayout.LayoutParams layoutParams =
                     (LinearLayout.LayoutParams) holder.background.getLayoutParams();
             layoutParams.gravity = Gravity.RIGHT;
             holder.background.setLayoutParams(layoutParams);
-
             RelativeLayout.LayoutParams lp =
                     (RelativeLayout.LayoutParams) holder.content.getLayoutParams();
             lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
             lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             holder.content.setLayoutParams(lp);
-
             layoutParams = (LinearLayout.LayoutParams) holder.text.getLayoutParams();
             layoutParams.gravity = Gravity.RIGHT;
             holder.text.setLayoutParams(layoutParams);
@@ -73,18 +69,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         }
         else {
             holder.background.setBackgroundResource(R.drawable.chat_them);
-
             LinearLayout.LayoutParams layoutParams =
                     (LinearLayout.LayoutParams) holder.background.getLayoutParams();
             layoutParams.gravity = Gravity.LEFT;
             holder.background.setLayoutParams(layoutParams);
-
             RelativeLayout.LayoutParams lp =
                     (RelativeLayout.LayoutParams) holder.content.getLayoutParams();
             lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
             lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             holder.content.setLayoutParams(lp);
-
             layoutParams = (LinearLayout.LayoutParams) holder.text.getLayoutParams();
             layoutParams.gravity = Gravity.LEFT;
             holder.text.setLayoutParams(layoutParams);
@@ -93,7 +86,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             layoutParams.gravity = Gravity.LEFT;
             holder.sender.setLayoutParams(layoutParams);
         }
-
     }
 
     @Override

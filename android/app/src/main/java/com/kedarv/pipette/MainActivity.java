@@ -1,11 +1,16 @@
 package com.kedarv.pipette;
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,25 +22,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import io.socket.client.Ack;
-import io.socket.client.IO;
 import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,37 +37,29 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
     Socket socket = null;
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
 
-
+        /* Set up RecyclerView and Adapter for the Conversation List */
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         chatAdapter = new ChatAdapter(cList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-
         recyclerView.setAdapter(chatAdapter);
 
-
-        try {
-            String URL = "http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000");
-            socket = IO.socket(URL);
-            Log.w("URL", URL);
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        /* Set up socket TODO: Move to thread */
+        SocketApplication app = new SocketApplication(getApplicationContext());
+        socket = app.getSocket();
         socket.connect();
+
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -82,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 socket.emit("getChat", c.getChatID(), new Ack() {
                     @Override
                     public void call(Object... args) {
-                        Log.w("pls work", args[0].toString());
                         Intent i = new Intent(getApplicationContext(), Messaging.class);
                         i.putExtra("data",args[0].toString());
                         i.putExtra("people", c.getPeopleAsString());
@@ -93,14 +78,23 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
-
+                Log.i("longPress", "longPress");
             }
         }));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
+        else {
+            fetchConversations();
+        }
+    }
+
+    public void fetchConversations() {
         socket.emit("getAllChat", new Ack() {
             @Override
             public void call(Object... args) {
                 ObjectMapper mapper = new ObjectMapper();
-
                 try {
                     // Establish root node
                     JsonNode rootNode = mapper.readTree(args[0].toString());
@@ -114,9 +108,16 @@ public class MainActivity extends AppCompatActivity {
                         while(peopleIterator.hasNext()) {
                             JsonNode person = peopleIterator.next();
                             String number = person.get("value").toString().replace("\"", "");
-                            number = String.format("(%s) %s-%s", number.substring(2, 5), number.substring(5, 8),
-                                    number.substring(8, 12));
-                            p.put(number, person.get("lookupValue").toString());
+                            if(!number.contains("@")) {
+                                number = String.format("(%s) %s-%s", number.substring(2, 5), number.substring(5, 8),
+                                        number.substring(8, 12));
+                            }
+                            String name = getContactName(getApplicationContext(), number);
+                            if (name != null) {
+                                p.put(number, name);
+                            } else {
+                                p.put(number, number);
+                            }
                         }
                         Chat chat = new Chat(chat_id, p, date);
                         cList.add(chat);
@@ -135,28 +136,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        HashMap<String, String> s = new HashMap<>();
-//        s.put("lol", "lol");
-//        Chat c = new Chat(10, s, 10);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-//        cList.add(c);
-
         chatAdapter.notifyDataSetChanged();
     }
-    // Menu icons are inflated just as they were with actionbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -164,15 +151,14 @@ public class MainActivity extends AppCompatActivity {
             case R.id.settings:
                 Intent i = new Intent(this, PreferencesActivity.class);
                 startActivity(i);
-                Log.w("click", "click");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
     public interface ClickListener {
         void onClick(View view, int position);
-
         void onLongClick(View view, int position);
     }
 
@@ -201,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-
             View child = rv.findChildViewUnder(e.getX(), e.getY());
             if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
                 clickListener.onClick(child, rv.getChildPosition(child));
@@ -217,6 +202,33 @@ public class MainActivity extends AppCompatActivity {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
         }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchConversations();
+            } else {
+                Toast.makeText(this, "Can't display contact names until permission is granted!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static String getContactName(Context context, String phoneNumber) {
+        ContentResolver cr = context.getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        String contactName = null;
+        if(cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        if(cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        return contactName;
     }
 
 }

@@ -14,26 +14,46 @@
         android:background="?attr/colorPrimary">
     </android.support.v7.widget.Toolbar>
     <RelativeLayout
+        android:id="@+id/chatLayout"
         android:paddingBottom="41dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/message_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/message_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:paddingBottom="15dp"
+            android:clipToPadding="false"/>
     </RelativeLayout>
+
+
+
     <RelativeLayout
         android:id="@+id/second_ll"
         android:layout_width="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_height="45dp"
         android:paddingTop="2dip"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"
         android:background="@color/white"
         >
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/GNowProgressBar"
+            android:indeterminate="true"
+            android:layout_marginTop="14dp"
+            android:visibility="invisible"
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip">
+
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +61,9 @@
             android:id="@+id/sendBtn"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:background="@android:color/transparent"
+            />
 
         <EditText
             android:layout_width="wrap_content"
@@ -51,6 +73,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/sendBtn"
-            android:layout_toStartOf="@+id/sendBtn" />
+            android:layout_toStartOf="@+id/sendBtn"
+            />
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>
