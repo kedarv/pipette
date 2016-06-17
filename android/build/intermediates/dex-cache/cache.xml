@@ -26,7 +26,7 @@
         jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         revision="23.0.3"
-        sha1="12342cf627d091d93cfdca80d1772d87fb6e2cc5">
+        sha1="b2f9d4eb04a22f39d38f39a8bd37203e580a98fe">
         <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_905545a6ca94d82be364eee45d878e2213040eaf/classes.dex" />
     </item>
     <item
@@ -75,7 +75,7 @@
         jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="23.0.3"
-        sha1="79181927cd25a4cad6a6495bb7d79eb5780975a4">
+        sha1="6e9d27287007f3a94e787f608b4f74d1f8bff0e7">
         <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_8a71e3a6ecb1acf91d2261d8b2e7d7469d6c7053/classes.dex" />
     </item>
     <item
