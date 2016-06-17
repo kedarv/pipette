@@ -39,5 +39,6 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+    compile 'com.github.kayvannj:PermissionUtils:1.0.2@aar'
 }
 

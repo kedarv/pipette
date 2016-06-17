@@ -92,6 +92,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.castorflex.smoothprogressbar/library/1.1.0/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.kayvannj/PermissionUtils/1.0.2/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
@@ -113,10 +114,11 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 23 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="socket.io-client-0.7.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.7.2" level="project" />
+    <orderEntry type="library" exported="" name="socket.io-client-0.7.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
+    <orderEntry type="library" exported="" name="PermissionUtils-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="engine.io-client-0.7.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-3.0.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.7.2" level="project" />

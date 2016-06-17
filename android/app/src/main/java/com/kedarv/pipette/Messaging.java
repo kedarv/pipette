@@ -8,6 +8,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -97,6 +99,7 @@ public class Messaging extends AppCompatActivity {
         assert sendMessageField != null;
         assert progressBar != null;
 
+        sendButton.setEnabled(false);
         // this MUST be put on another thread to reduce UI lag
         socket.on("updateChatData", new Emitter.Listener() {
             @Override
@@ -139,9 +142,21 @@ public class Messaging extends AppCompatActivity {
                 }
             }
         });
+        sendMessageField.addTextChangedListener(new TextWatcher() {
 
+            public void afterTextChanged(Editable s) {
+                if(sendMessageField.getText().toString().length() > 0) {
+                    sendButton.setEnabled(true);
+                }
+                else {
+                    sendButton.setEnabled(false);
+                }
+            }
 
-//        mProgressBar1.progressiveStop();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
     }
 
     public void send(String msg, String guid) throws URISyntaxException, JSONException {
@@ -165,4 +180,5 @@ public class Messaging extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

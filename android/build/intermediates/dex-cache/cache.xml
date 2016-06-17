@@ -26,7 +26,7 @@
         jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         revision="23.0.3"
-        sha1="74717fe2ea1c1a8b7cad3a0f76b2dd5597bd14a0">
+        sha1="af7df3098f0d2b4a99386d51516421b03c3bf348">
         <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_905545a6ca94d82be364eee45d878e2213040eaf/classes.dex" />
     </item>
     <item
@@ -35,6 +35,13 @@
         revision="23.0.3"
         sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
         <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.4.0_e4534a77e81e61749092a8fc75ef746139a53c7c/classes.dex" />
+    </item>
+    <item
+        jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/exploded-aar/com.github.kayvannj/PermissionUtils/1.0.2/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="a773ccb24325de96645014e78c88607808dd8efc">
+        <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.github.kayvannj-PermissionUtils-1.0.2_8fc35af8a57f4e9e467e39aa4bde5dc91a1ed4ba/classes.dex" />
     </item>
     <item
         jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.1.1/jars/classes.jar"
@@ -75,7 +82,7 @@
         jar="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="23.0.3"
-        sha1="4550e96f794ed13dfc7a168c1022a9754dd8a673">
+        sha1="344d2a3ce0b97b23e4f935cc46d78b4289761a46">
         <dex dex="/Users/kedar/Desktop/MessageBridge/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_8a71e3a6ecb1acf91d2261d8b2e7d7469d6c7053/classes.dex" />
     </item>
     <item
