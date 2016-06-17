@@ -120,7 +120,7 @@ public class Messaging extends AppCompatActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                         mAdapter.notifyItemInserted(messageList.size() - 1);
-//                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
+                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
                     }});
             }
         });
