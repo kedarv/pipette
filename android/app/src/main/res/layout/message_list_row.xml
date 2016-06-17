@@ -10,28 +10,28 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/sender"
-        android:layout_width="wrap_content"
-        android:layout_gravity="right"
-        android:textColor="@android:color/darker_gray"
-        android:layout_height="wrap_content" />
-    <LinearLayout
-        android:id="@+id/contentWithBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:paddingLeft="10dp"
-        android:paddingBottom="10dp"
-        android:orientation="vertical"
-        >
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/sender"
+            android:layout_width="wrap_content"
+            android:layout_gravity="right"
+            android:textColor="@android:color/darker_gray"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/contentWithBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:textSize="16dp"
-            android:maxWidth="220dp"/>
-    </LinearLayout>
+            android:layout_gravity="right"
+            android:paddingLeft="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16dp"
+                android:maxWidth="220dp"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
@@ -19,8 +18,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
         public MyViewHolder(View view) {
             super(view);
-            people = (TextView) view.findViewById(R.id.genre);
-            date = (TextView) view.findViewById(R.id.year);
+            people = (TextView) view.findViewById(R.id.people);
+            date = (TextView) view.findViewById(R.id.date);
         }
     }
 
