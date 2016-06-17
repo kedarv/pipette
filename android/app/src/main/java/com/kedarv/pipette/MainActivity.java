@@ -3,6 +3,7 @@ package com.kedarv.pipette;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class MainActivity extends AppCompatActivity {
     private List<Chat> cList = new ArrayList<>();
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     Socket socket = null;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-
+    int connectionAttempt = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         /* Set up socket TODO: Move to thread */
         SocketApplication app = new SocketApplication(getApplicationContext());
         socket = app.getSocket();
+        socket.on(Socket.EVENT_RECONNECT_ATTEMPT, onReconnectAttempt);
         socket.connect();
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
@@ -231,4 +235,28 @@ public class MainActivity extends AppCompatActivity {
         return contactName;
     }
 
+    private Emitter.Listener onReconnectAttempt = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            connectionAttempt++;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(connectionAttempt < 5) {
+                        Toast.makeText(getApplicationContext(),
+                                "Could not connect to server, retrying with attempt #" + connectionAttempt, Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        socket.disconnect();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogStyle);
+                        builder.setTitle("Couldn't connect to Server");
+                        builder.setMessage("Please check your settings and ensure the server is running.");
+                        builder.setPositiveButton("OK", null);
+                        builder.show();
+
+                    }
+                }
+            });
+        }
+    };
 }
