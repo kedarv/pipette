@@ -13,24 +13,23 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -38,12 +37,15 @@ import io.socket.emitter.Emitter;
 public class Messaging extends AppCompatActivity {
     Socket socket = null;
     SharedPreferences prefs;
-    String guid;
+    private String guid;
     private List<Message> messageList = new ArrayList<>();
+    private HashMap<Message, Integer> holderList = new HashMap<>();
     private RecyclerView recyclerView;
     private MessageAdapter mAdapter;
     private EditText sendMessageField;
     private Button sendButton;
+    private int chat_id;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,9 @@ public class Messaging extends AppCompatActivity {
         socket = app.getSocket();
         socket.connect();
 
+        guid = extras.getString("guid");
+        chat_id = extras.getInt("chat_id");
+
         final ObjectMapper mapper = new ObjectMapper();
         String data = extras.getString("data");
         JsonNode rootNode = null;
@@ -83,13 +88,15 @@ public class Messaging extends AppCompatActivity {
         Iterator<JsonNode> iterator = rootNode.elements();
         while (iterator.hasNext()) {
             JsonNode messages = iterator.next();
-            guid = messages.get("guid").asText();
-            Message m = new Message(messages.get("text").asText(), messages.get("who_from").asText(), messages.get("is_from_me").asInt(), messages.get("chat_id").asInt(), messages.get("date").asInt());
+            // temporary workaround
+            if (username == null && messages.get("is_from_me").asInt() == 1) {
+                username = messages.get("who_from").asText();
+            }
+            Message m = new Message(messages.get("text").asText(), messages.get("who_from").asText(), messages.get("is_from_me").asInt(), messages.get("chat_id").asInt(), messages.get("date").asInt(), 1);
             messageList.add(m);
-            Log.w("message", m.toString());
         }
         mAdapter.notifyDataSetChanged();
-        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
+        recyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
 
         sendButton = (Button) findViewById(R.id.sendBtn);
         sendMessageField = (EditText) findViewById(R.id.msgText);
@@ -110,21 +117,33 @@ public class Messaging extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.w("here!", newNode.toString());
+
                 JsonNode node = newNode.get("data").get(0);
-                final Message m = new Message(node.get("text").asText(), node.get("who_from").asText(), node.get("is_from_me").asInt(), node.get("chat_id").asInt(), node.get("date").asInt());
-                messageList.add(m);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(m.getFrom_me() == 1) {
+                final Message m = new Message(node.get("text").asText(), node.get("who_from").get("value").asText(), node.get("is_from_me").asInt(), node.get("chat_id").asInt(), node.get("date").asInt(), 1);
+                Integer t = holderList.get(m);
+
+                if (t != null) {
+                    holderList.remove(m);
+                    messageList.get(t).setStatus(1);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                             sendMessageField.setVisibility(View.VISIBLE);
                             sendButton.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.INVISIBLE);
+                            mAdapter.notifyDataSetChanged();
                         }
-                        mAdapter.notifyItemInserted(messageList.size() - 1);
-                        recyclerView.scrollToPosition(mAdapter.getItemCount()-1);
-                    }});
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            messageList.add(m);
+                            mAdapter.notifyItemInserted(messageList.size() - 1);
+                            recyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
+                        }
+                    });
+                }
             }
         });
 
@@ -142,27 +161,42 @@ public class Messaging extends AppCompatActivity {
                 }
             }
         });
-        sendMessageField.addTextChangedListener(new TextWatcher() {
 
+        sendMessageField.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                if(sendMessageField.getText().toString().length() > 0) {
+                if (sendMessageField.getText().toString().length() > 0) {
                     sendButton.setEnabled(true);
-                }
-                else {
+                } else {
                     sendButton.setEnabled(false);
                 }
             }
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
         });
     }
 
     public void send(String msg, String guid) throws URISyntaxException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("text",  msg);
+        json.put("text", msg);
         json.put("guid", guid);
+
+        // Immediately insert message into list so that UI feels more responsive
+        // Unsent messages are given a different distinction
+        final Message m = new Message(msg, username, 1, chat_id, 1, 0);
+        messageList.add(m);
+        holderList.put(m, messageList.size() - 1);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyItemInserted(messageList.size() - 1);
+                recyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
 
         socket.emit("sendMessage", json, new Ack() {
             @Override
@@ -180,5 +214,4 @@ public class Messaging extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

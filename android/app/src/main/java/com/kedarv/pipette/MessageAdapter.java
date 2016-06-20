@@ -49,7 +49,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
         holder.text.setText(message.getText());
 
         if(message.getFrom_me() == 1) {
-            holder.background.setBackgroundResource(R.drawable.chat_me);
+            if(message.getStatus() == 0) {
+                holder.background.setBackgroundResource(R.drawable.chat_unsent);
+            }
+            else {
+                holder.background.setBackgroundResource(R.drawable.chat_me);
+            }
             LinearLayout.LayoutParams layoutParams =
                     (LinearLayout.LayoutParams) holder.background.getLayoutParams();
             layoutParams.gravity = Gravity.RIGHT;
