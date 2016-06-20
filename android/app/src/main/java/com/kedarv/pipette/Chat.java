@@ -10,11 +10,13 @@ public class Chat {
     private HashMap<String, String> people;
     private long date;
     private int chat_id;
+    private String guid;
 
-    public Chat(int chat_id, HashMap<String, String> people, long date) {
+    public Chat(int chat_id, HashMap<String, String> people, long date, String guid) {
         this.chat_id = chat_id;
         this.people = people;
         this.date = date;
+        this.guid = guid;
     }
     public String toString() {
         return "chat_id: " + chat_id + " people: " + people.toString() + " date: " + date;
@@ -44,4 +46,5 @@ public class Chat {
     public int getChatID() {
         return chat_id;
     }
+    public String getGuid() {return guid; }
 }

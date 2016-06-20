@@ -14,7 +14,9 @@
     <!-- This configures the styles for the title within the Toolbar  -->
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
     </style>
-
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+    </style>
     <style name="GNowProgressBar" parent="SmoothProgressBar">
         <item name="spb_stroke_separator_length">8dp</item>
         <item name="spb_sections_count">2</item>
