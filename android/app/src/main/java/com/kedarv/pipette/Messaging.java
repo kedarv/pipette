@@ -1,5 +1,6 @@
 package com.kedarv.pipette;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,12 +64,22 @@ public class Messaging extends AppCompatActivity {
 
         /* Set up RecyclerView and Adapter for the Message List */
         recyclerView = (RecyclerView) findViewById(R.id.message_recycler_view);
-        mAdapter = new MessageAdapter(messageList);
+        mAdapter = new MessageAdapter(messageList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
+        recyclerView.addOnItemTouchListener(new MainActivity.RecyclerTouchListener(getApplicationContext(), recyclerView, new MainActivity.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+            }
 
+            @Override
+            public void onLongClick(View view, int position) {
+                final Message m = messageList.get(position);
+                Toast.makeText(getApplicationContext(), m.getText() + " is selected!", Toast.LENGTH_SHORT).show();
+            }
+        }));
         /* Set up Socket TODO: Move to Thread */
         SocketApplication app = new SocketApplication(getApplicationContext());
         socket = app.getSocket();
@@ -92,7 +104,14 @@ public class Messaging extends AppCompatActivity {
             if (username == null && messages.get("is_from_me").asInt() == 1) {
                 username = messages.get("who_from").asText();
             }
-            Message m = new Message(messages.get("text").asText(), messages.get("who_from").asText(), messages.get("is_from_me").asInt(), messages.get("chat_id").asInt(), messages.get("date").asInt(), 1);
+            Message m;
+            if(messages.get("attachment_id").asInt() != 0) {
+                m = new Message(messages.get("text").asText(), messages.get("who_from").asText(), messages.get("is_from_me").asInt(), messages.get("chat_id").asInt(), messages.get("date").asInt(), 1, messages.get("attachment_id").asInt());
+                Log.w("img", app.getSocketURL() + "/attachment/" + messages.get("attachment_id").asInt());
+            }
+            else {
+                m = new Message(messages.get("text").asText(), messages.get("who_from").asText(), messages.get("is_from_me").asInt(), messages.get("chat_id").asInt(), messages.get("date").asInt(), 1);
+            }
             messageList.add(m);
         }
         mAdapter.notifyDataSetChanged();

@@ -13,6 +13,7 @@ public class Message {
     private int chat_id;
     private int date;
     private int status;
+    private int attachment_id;
 
     public Message(String text, String sender, int from_me, int chat_id, int date, int status) {
         this.text = text;
@@ -22,7 +23,15 @@ public class Message {
         this.date = date;
         this.status = status;
     }
-
+    public Message(String text, String sender, int from_me, int chat_id, int date, int status, int attachment_id) {
+        this.text = text;
+        this.sender = sender;
+        this.from_me = from_me;
+        this.chat_id = chat_id;
+        this.date = date;
+        this.status = status;
+        this.attachment_id = attachment_id;
+    }
     public String getText() {
         return text;
     }
@@ -43,6 +52,15 @@ public class Message {
     }
     public void setStatus(int s) {
         status = s;
+    }
+    public boolean hasAttachment() {
+        if(attachment_id != 0) {
+            return true;
+        }
+        return false;
+    }
+    public int getAttachmentID() {
+        return attachment_id;
     }
 
     @Override

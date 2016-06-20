@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         i.putExtra("people", c.getPeopleAsString());
                         Log.d("chat_id", c.getChatID() + "");
                         Log.d("guid", c.getGuid());
+                        Log.d("data", args[0].toString());
                         startActivity(i);
                     }
                 });
