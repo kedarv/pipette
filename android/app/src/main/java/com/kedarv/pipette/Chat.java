@@ -1,8 +1,10 @@
 package com.kedarv.pipette;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Created by kedar on 6/15/16.
@@ -42,9 +44,11 @@ public class Chat {
     public long getDate() {
         return date;
     }
-    public String getReadableDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, h:mm a");
-        return sdf.format(date * 1000L);
+    public String getFormattedDate() {
+        Date date = new Date(this.date * 1000L); // *1000 is to convert seconds to milliseconds
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, h:mm a"); // the format of your date
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT-10"));
+        return sdf.format(date);
     }
     public int getChatID() {
         return chat_id;

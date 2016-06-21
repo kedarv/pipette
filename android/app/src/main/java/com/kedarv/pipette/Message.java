@@ -1,5 +1,7 @@
 package com.kedarv.pipette;
 
+import android.util.Log;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -52,9 +54,11 @@ public class Message {
         return date;
     }
     public String getFormattedDate() {
+        Log.w("date", date + "");
         // this is wrong
         Date date = new Date(this.date * 1000L); // *1000 is to convert seconds to milliseconds
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a"); // the format of your date
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a"); // the format of your date
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT-10"));
         return sdf.format(date);
     }
     public int getStatus() {

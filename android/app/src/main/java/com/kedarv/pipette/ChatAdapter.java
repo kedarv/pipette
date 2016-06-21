@@ -47,7 +47,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Chat chat = chatList.get(position);
-        holder.people.setText(chat.getReadableDate());
+        holder.people.setText(chat.getFormattedDate());
         holder.date.setText(chat.getPeopleAsString());
         TextDrawable drawable = TextDrawable.builder()
                 .beginConfig()
