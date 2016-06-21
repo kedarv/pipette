@@ -25,6 +25,11 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 }
+repositories{
+    maven {
+        url 'http://dl.bintray.com/amulyakhare/maven'
+    }
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -41,5 +46,6 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 }
 
