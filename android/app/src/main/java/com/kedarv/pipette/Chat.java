@@ -1,7 +1,10 @@
 package com.kedarv.pipette;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Created by kedar on 6/15/16.
@@ -11,6 +14,8 @@ public class Chat {
     private long date;
     private int chat_id;
     private String guid;
+    private int numPeople;
+    private int color;
 
     public Chat(int chat_id, HashMap<String, String> people, long date, String guid) {
         this.chat_id = chat_id;
@@ -39,12 +44,49 @@ public class Chat {
     public long getDate() {
         return date;
     }
-    public String getReadableDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, h:mm a");
-        return sdf.format(date * 1000L);
+    public String getFormattedDate() {
+        Date date = new Date(this.date * 1000L); // *1000 is to convert seconds to milliseconds
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, h:mm a"); // the format of your date
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT-10"));
+        return sdf.format(date);
     }
     public int getChatID() {
         return chat_id;
     }
     public String getGuid() {return guid; }
+    public int getNumPeople() {return numPeople; }
+    public void setNumPeople(int i) { numPeople = i;}
+    public int getColor() {
+        return color;
+    }
+    public void setColor(int c) {
+        color = c;
+    }
+
+    public String getBubbleText() {
+        if(numPeople > 1) {
+            return Integer.toString(numPeople);
+        }
+        else {
+            Map.Entry<String,String> entry= people.entrySet().iterator().next();
+            String key= entry.getKey();
+            String value=entry.getValue();
+            if(value == null) {
+                return key;
+            }
+            else if(value.contains("@")) {
+                return "@";
+            }
+            else if(value.matches(".*\\d.*")) {
+                return "#";
+            }
+            else {
+                StringBuilder letters = new StringBuilder();
+                for(String s : value.split(" ")) {
+                    letters.append(Character.toUpperCase(s.charAt(0)));
+                }
+                return letters.toString();
+            }
+        }
+    }
 }

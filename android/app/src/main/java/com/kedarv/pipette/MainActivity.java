@@ -24,6 +24,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
+
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         i.putExtra("people", c.getPeopleAsString());
                         Log.d("chat_id", c.getChatID() + "");
                         Log.d("guid", c.getGuid());
+                        Log.d("data", args[0].toString());
                         startActivity(i);
                     }
                 });
@@ -108,11 +111,13 @@ public class MainActivity extends AppCompatActivity {
                     JsonNode rootNode = mapper.readTree(args[0].toString());
                     Iterator<JsonNode> iterator = rootNode.elements();
                     while (iterator.hasNext()) {
+                        int numPeople = 0;
                         HashMap<String, String> peopleMap = new HashMap<String, String>();
                         JsonNode chatThread = iterator.next();
                         long date = chatThread.get("lastUpdate").asLong();
                         Iterator<JsonNode> peopleIterator = chatThread.get("people").elements();
                         while(peopleIterator.hasNext()) {
+                            numPeople++;
                             JsonNode person = peopleIterator.next();
                             String number = person.get("value").toString().replace("\"", "");
                             if(!number.contains("@")) {
@@ -126,9 +131,13 @@ public class MainActivity extends AppCompatActivity {
                                 peopleMap.put(number, number);
                             }
                         }
+                        ColorGenerator colorGenerator = ColorGenerator.MATERIAL; // or use DEFAULT
                         Chat chat = new Chat(chatThread.get("chat_id").asInt(), peopleMap, date, chatThread.get("guid").asText());
+                        chat.setNumPeople(numPeople);
+                        chat.setColor(colorGenerator.getColor(chat.getChatID()));
                         cList.add(chat);
                         Log.w("people", peopleMap.toString());
+                        Log.w("getPeople", chat.getNumPeople() + "");
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

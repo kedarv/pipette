@@ -15,11 +15,12 @@ import io.socket.client.Socket;
  */
 public class SocketApplication {
     private Socket socket;
-
+    private static String URL;
     SocketApplication(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         try {
-            socket = IO.socket("http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000"));
+            URL = "http://" + prefs.getString("server_ip", "http://127.0.0.1/") + ":" + prefs.getString("server_port", "3000");
+            socket = IO.socket(URL);
         } catch(URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -27,4 +28,5 @@ public class SocketApplication {
     public Socket getSocket() {
         return socket;
     }
+    public static String getSocketURL() {return URL; }
 }
