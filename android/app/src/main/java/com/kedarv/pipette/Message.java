@@ -3,6 +3,10 @@ package com.kedarv.pipette;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Created by kedar on 6/16/16.
  */
@@ -46,6 +50,12 @@ public class Message {
     }
     public int getDate() {
         return date;
+    }
+    public String getFormattedDate() {
+        // this is wrong
+        Date date = new Date(this.date * 1000L); // *1000 is to convert seconds to milliseconds
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a"); // the format of your date
+        return sdf.format(date);
     }
     public int getStatus() {
         return status;

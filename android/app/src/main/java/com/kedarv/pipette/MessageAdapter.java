@@ -54,7 +54,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Message message = messageList.get(position);
-        holder.sender.setText(message.getSender());
+        holder.sender.setText(message.getFormattedDate());
         holder.text.setText(message.getText());
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) holder.background.getLayoutParams();
