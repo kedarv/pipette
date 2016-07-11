@@ -38,15 +38,6 @@
         android:paddingTop="2dip"
         android:background="@color/white"
         >
-        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-            android:id="@+id/progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/GNowProgressBar"
-            android:indeterminate="true"
-            android:layout_marginTop="14dp"
-            android:visibility="invisible"
-            />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

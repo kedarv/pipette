@@ -1,6 +1,5 @@
 package com.kedarv.pipette;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -119,11 +117,9 @@ public class Messaging extends AppCompatActivity {
 
         sendButton = (Button) findViewById(R.id.sendBtn);
         sendMessageField = (EditText) findViewById(R.id.msgText);
-        final SmoothProgressBar progressBar = (SmoothProgressBar) findViewById(R.id.progress);
 
         assert sendButton != null;
         assert sendMessageField != null;
-        assert progressBar != null;
 
         sendButton.setEnabled(false);
         // this MUST be put on another thread to reduce UI lag
@@ -147,9 +143,8 @@ public class Messaging extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            sendMessageField.setVisibility(View.VISIBLE);
-                            sendButton.setVisibility(View.VISIBLE);
-                            progressBar.setVisibility(View.INVISIBLE);
+//                            sendMessageField.setVisibility(View.VISIBLE);
+//                            sendButton.setVisibility(View.VISIBLE);
                             mAdapter.notifyDataSetChanged();
                         }
                     });
@@ -172,9 +167,8 @@ public class Messaging extends AppCompatActivity {
                 try {
                     send(sendMessageField.getText().toString(), guid);
                     sendMessageField.setText("");
-                    sendButton.setVisibility(View.INVISIBLE);
-                    sendMessageField.setVisibility(View.INVISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
+//                    sendButton.setVisibility(View.INVISIBLE);
+//                    sendMessageField.setVisibility(View.INVISIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
