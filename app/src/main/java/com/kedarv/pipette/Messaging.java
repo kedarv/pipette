@@ -143,8 +143,6 @@ public class Messaging extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-//                            sendMessageField.setVisibility(View.VISIBLE);
-//                            sendButton.setVisibility(View.VISIBLE);
                             mAdapter.notifyDataSetChanged();
                         }
                     });
@@ -167,8 +165,6 @@ public class Messaging extends AppCompatActivity {
                 try {
                     send(sendMessageField.getText().toString(), guid);
                     sendMessageField.setText("");
-//                    sendButton.setVisibility(View.INVISIBLE);
-//                    sendMessageField.setVisibility(View.INVISIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

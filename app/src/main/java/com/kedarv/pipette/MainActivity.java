@@ -1,15 +1,17 @@
 package com.kedarv.pipette;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     Socket socket = null;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     int connectionAttempt = 0;
+    String storedIP;
+    String storedPort;
+    SharedPreferences prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(chatAdapter);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        storedIP = prefs.getString("server_ip", "127.0.0.1");
+        storedPort = prefs.getString("server_port", "3000");
+
         /* Set up socket TODO: Move to thread */
         SocketApplication app = new SocketApplication(getApplicationContext());
         socket = app.getSocket();
@@ -70,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 final Chat c = cList.get(position);
-                Toast.makeText(getApplicationContext(), c.getChatID() + " is selected!", Toast.LENGTH_SHORT).show();
                 socket.emit("getChat", c.getChatID(), new Ack() {
                     @Override
                     public void call(Object... args) {
@@ -166,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.settings:
                 Intent i = new Intent(this, PreferencesActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -265,10 +274,44 @@ public class MainActivity extends AppCompatActivity {
                         builder.setMessage("Please check your settings and ensure the server is running.");
                         builder.setPositiveButton("OK", null);
                         builder.show();
-
                     }
                 }
             });
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK) {
+                boolean changed = false;
+                if(!storedIP.equals(prefs.getString("server_ip", "default_ip"))) {
+                    storedIP = prefs.getString("server_ip", "default_ip");
+                    changed = true;
+                }
+                if(!storedPort.equals(prefs.getString("server_port", "default_port"))) {
+                    storedPort = prefs.getString("server_port", "default_port");
+                    changed = true;
+                }
+
+                if(changed) {
+                    Log.w("reconnect", "reconnect");
+                    socket.disconnect();
+                    SocketApplication app = new SocketApplication(getApplicationContext());
+                    socket = app.getSocket();
+                    socket.on(Socket.EVENT_RECONNECT_ATTEMPT, onReconnectAttempt);
+                    socket.connect();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+                    }
+                    else {
+                        cList.clear();
+                        chatAdapter.notifyDataSetChanged();
+                        fetchConversations();
+                    }
+                }
+            }
+        }
+    }
 }
